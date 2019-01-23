@@ -67,21 +67,40 @@ if [ "$AIRFLOW__CORE__EXECUTOR" = "CeleryExecutor" ]; then
   wait_for_port "Redis" "$REDIS_HOST" "$REDIS_PORT"
 fi
 
+case "${DB_RUN_ACTION:=init}" in
+  init)
+    DB_RUN_CMD="airflow initdb"
+    ;;
+  update)
+    DB_RUN_CMD="airflow updatedb"
+    ;;
+  none)
+    DB_RUN_CMD=":"
+    ;;
+esac
+
 case "$1" in
   webserver)
-    airflow initdb
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ]; then
       # With the "Local" executor it should all run in one container.
+      ${DB_RUN_CMD}
       airflow scheduler &
+    else
+      # To give the scheduler time to run initdb.
+      sleep 10
     fi
     exec airflow webserver
     ;;
-  worker|scheduler)
-    # To give the webserver time to run initdb.
+  scheduler)
+    ${DB_RUN_CMD}
+    exec airflow "$@"
+    ;;
+  worker)
     sleep 10
     exec airflow "$@"
     ;;
   flower)
+    sleep 10
     exec airflow "$@"
     ;;
   version)
