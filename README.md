@@ -1,8 +1,7 @@
 # docker-airflow
-[![CircleCI](https://circleci.com/gh/bliseng/docker-airflow/tree/master.svg?style=svg)](https://circleci.com/gh/bliseng/docker-airflow/tree/master)
-[![Docker Build Status](https://img.shields.io/docker/build/bliseng/airflow.svg)]()
-
+[![CircleCI](https://img.shields.io/circleci/project/github/bliseng/docker-airflow.svg)](https://circleci.com/gh/bliseng/docker-airflow/tree/master)
 [![Docker Hub](https://img.shields.io/badge/docker-ready-blue.svg)](https://hub.docker.com/r/bliseng/airflow/)
+
 [![Docker Pulls](https://img.shields.io/docker/pulls/bliseng/airflow.svg)](https://hub.docker.com/r/bliseng/airflow/)
 [![Docker Stars](https://img.shields.io/docker/stars/bliseng/airflow.svg)](https://hub.docker.com/r/bliseng/airflow/)
 
