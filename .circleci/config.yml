@@ -1,30 +1,67 @@
-version: 2
+version: 2.1
 
-jobs:
-  build:
+executors:
+  airflow:
     docker:
       - image: docker:18.06.1-ce-git
+    environment:
+      AIRFLOW_VERSION: 1.10.2
     working_directory: ~/CircleCI/docker-airflow
+
+commands:
+  build-container:
+    parameters:
+      airflow-version:
+        type: string
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
       - run: |
-          docker build -t bliseng/airflow .
+          docker build \
+            --build-arg AIRFLOW_VERSION=<< parameters.airflow-version >> \
+            --tag bliseng/airflow \
+            .
 
-  test:
-    docker:
-      - image: docker:18.06.1-ce-git
+jobs:
+  build:
+    executor: airflow
     steps:
-      - setup_remote_docker
+      - build-container:
+          airflow-version: ${AIRFLOW_VERSION}
+      - run: docker run bliseng/airflow version | grep ${AIRFLOW_VERSION}
+
+  deploy:
+    executor: airflow
+    steps:
+      - build-container:
+          airflow-version: ${AIRFLOW_VERSION}
       - run: |
-          docker run bliseng/airflow version | grep '1.10.2'
+          echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin && \
+            docker tag bliseng/airflow bliseng/airflow:${CIRCLE_TAG} && \
+            docker tag bliseng/airflow bliseng/airflow:latest && \
+            docker push bliseng/airflow:${CIRCLE_TAG} && \
+            docker push bliseng/airflow:latest
 
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build
-      - test:
+  deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+      - deploy:
           requires:
             - build
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+
