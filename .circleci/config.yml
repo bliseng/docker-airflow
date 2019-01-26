@@ -26,7 +26,8 @@ jobs:
     steps:
       - setup_remote_docker
       - run: |
-
+          echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+           docker push bliseng/$IMAGE_NAME:$CIRCLE_TAG
 
 workflows:
   version: 2
