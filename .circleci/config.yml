@@ -5,7 +5,7 @@ executors:
     docker:
       - image: docker:18.06.1-ce-git
     environment:
-      AIRFLOW_VERSION: 1.10.2
+      AIRFLOW_VERSION: 1.10.3
     working_directory: ~/CircleCI/docker-airflow
 
 commands:
