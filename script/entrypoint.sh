@@ -72,7 +72,7 @@ case "${DB_RUN_ACTION:=init}" in
     DB_RUN_CMD="airflow initdb"
     ;;
   update)
-    DB_RUN_CMD="airflow updatedb"
+    DB_RUN_CMD="airflow upgradedb"
     ;;
   none)
     DB_RUN_CMD=":"
